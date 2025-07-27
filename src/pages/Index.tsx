@@ -182,6 +182,18 @@ const Index = () => {
         </section>
       </main>
 
+      {/* Footer */}
+      <footer className="relative z-10 text-center py-8 border-t border-border/50">
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Made By Student For Students
+          </p>
+          <p className="text-xs text-muted-foreground">
+            © 2025 Code Depot. All rights reserved.
+          </p>
+        </div>
+      </footer>
+
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
     </div>
