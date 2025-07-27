@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import TypewriterText from '@/components/TypewriterText';
-import Sidebar from '@/components/Sidebar';
+import { Sidebar } from '@/components/Sidebar';
+import { CodeEditor } from '@/components/CodeEditor';
 import heroIllustration from '@/assets/hero-illustration.jpg';
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [accessKey, setAccessKey] = useState('');
 
   const userTypes = ['Students', 'Developers', 'Professionals', 'IT Teachers'];
 
@@ -16,6 +19,22 @@ const Index = () => {
   const closeSidebar = () => {
     setIsSidebarOpen(false);
   };
+
+  useEffect(() => {
+    // Check if user is authenticated
+    const storedKey = localStorage.getItem('codeDepotKey');
+    const storedAuth = localStorage.getItem('codeDepotAuth');
+    
+    if (storedKey && storedAuth === 'true') {
+      setAccessKey(storedKey);
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  // If authenticated, show the code editor
+  if (isAuthenticated && accessKey) {
+    return <CodeEditor accessKey={accessKey} />;
+  }
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">

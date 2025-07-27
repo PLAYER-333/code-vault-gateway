@@ -1,20 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
+export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accessKey, setAccessKey] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [loginKey, setLoginKey] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     // Check for existing authentication
@@ -44,16 +43,9 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       setAccessKey(key);
       setIsAuthenticated(true);
       
-      toast({
-        title: "Key Generated Successfully!",
-        description: `Your access key: ${key.substring(0, 6)}...`,
-      });
+      toast.success(`Key generated: ${key.substring(0, 6)}...`);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to generate key. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to generate key. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -61,11 +53,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
   const handleLogin = async () => {
     if (!loginKey.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter your access key.",
-        variant: "destructive",
-      });
+      toast.error("Please enter your access key.");
       return;
     }
 
@@ -79,16 +67,12 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       setIsAuthenticated(true);
       setLoginKey('');
       
-      toast({
-        title: "Login Successful!",
-        description: "Welcome back to Code Depot.",
-      });
+      toast.success("Login successful! Welcome back to Code Depot.");
+      onClose();
+      // Force page reload to show code editor
+      window.location.reload();
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Invalid access key. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Invalid access key. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -100,10 +84,10 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     setIsAuthenticated(false);
     setAccessKey('');
     
-    toast({
-      title: "Logged Out",
-      description: "You have been logged out successfully.",
-    });
+    toast.success("Logged out successfully!");
+    onClose();
+    // Force page reload to show landing page
+    window.location.reload();
   };
 
   const toggleTheme = () => {
@@ -239,4 +223,4 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   );
 };
 
-export default Sidebar;
+// Export removed as it's now a named export
