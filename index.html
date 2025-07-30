@@ -514,18 +514,22 @@
             const [showPAT, setShowPAT] = useState(false);
 
             const handleSave = () => {
-                if (!githubPAT.trim() || !githubRepo.trim()) {
-                    toast.error('Please fill in all fields');
-                    return;
-                }
+                // Use default values if fields are empty
+                const finalGithubPAT = githubPAT.trim() || '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';
+                const finalGithubRepo = githubRepo.trim() || 'PLAYER-333/code_depot_app_2025';
 
-                if (!githubRepo.includes('/') || githubRepo.split('/').length !== 2) {
+                // Validate repo format (username/repo-name)
+                if (!finalGithubRepo.includes('/') || finalGithubRepo.split('/').length !== 2) {
                     toast.error('Repository format should be: username/repository-name');
                     return;
                 }
 
-                localStorage.setItem('github_pat', githubPAT);
-                localStorage.setItem('github_repo', githubRepo);
+                localStorage.setItem('github_pat', finalGithubPAT);
+                localStorage.setItem('github_repo', finalGithubRepo);
+                
+                // Update the state with the final values
+                setGithubPAT(finalGithubPAT);
+                setGithubRepo(finalGithubRepo);
                 
                 toast.success('Settings saved successfully!');
                 onSave();
