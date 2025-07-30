@@ -515,8 +515,8 @@
 
             const handleSave = () => {
                 // Use default values if fields are empty
-                const finalGithubPAT = githubPAT.trim() || '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';
-                const finalGithubRepo = githubRepo.trim() || 'PLAYER-333/code_depot_app_2025';
+                const finalGithubPAT = githubPAT.trim() || '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';
+                const finalGithubRepo = githubRepo.trim() || 'PLAYER-333/code-depot-dashboard';
 
                 // Validate repo format (username/repo-name)
                 if (!finalGithubRepo.includes('/') || finalGithubRepo.split('/').length !== 2) {
@@ -586,7 +586,7 @@
                                             type={showPAT ? 'text' : 'password'}
                                             value={githubPAT}
                                             onChange={(e) => setGithubPAT(e.target.value)}
-                                            placeholder="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"
+                                            placeholder="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"
                                             className="pr-10"
                                         />
                                         <button
@@ -605,7 +605,7 @@
                                         id="github-repo"
                                         value={githubRepo}
                                         onChange={(e) => setGithubRepo(e.target.value)}
-                                        placeholder="yourusername/your-repo-name"
+                                        placeholder="PLAYER-333/code-depot-dashboard"
                                     />
                                 </div>
                             </div>
@@ -1275,7 +1275,7 @@
                         <section className="container mx-auto px-4 py-20 text-center">
                             <div className="max-w-4xl mx-auto animate-fade-in">
                                 <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-primary bg-clip-text text-transparent leading-tight">
-                                    The Future of Code Management
+                                    Manage Your Code Like Never Before
                                 </h1>
                                 
                                 <div className="text-xl md:text-2xl text-muted-foreground mb-8 h-16 flex items-center justify-center">
