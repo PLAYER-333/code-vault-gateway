@@ -582,7 +582,7 @@
                                             type={showPAT ? 'text' : 'password'}
                                             value={githubPAT}
                                             onChange={(e) => setGithubPAT(e.target.value)}
-                                            placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                            placeholder="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"
                                             className="pr-10"
                                         />
                                         <button
@@ -830,15 +830,33 @@
                                 <h1 className="text-xl font-semibold">Code Depot</h1>
                                 <Badge variant="secondary">Key: {accessKey.slice(0, 8)}...</Badge>
                             </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setIsSettingsOpen(true)}
-                                className="gap-2"
-                            >
-                                <i className="fas fa-cog"></i>
-                                Settings
-                            </Button>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setIsSettingsOpen(true)}
+                                    className="gap-2"
+                                >
+                                    <i className="fas fa-cog"></i>
+                                    Settings
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                        localStorage.removeItem('codeDepotKey');
+                                        localStorage.removeItem('codeDepotAuth');
+                                        localStorage.removeItem('github_pat');
+                                        localStorage.removeItem('github_repo');
+                                        toast.success('Logged out successfully!');
+                                        window.location.reload();
+                                    }}
+                                    className="gap-2 border-destructive text-destructive hover:bg-destructive hover:bg-opacity-10"
+                                >
+                                    <i className="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </Button>
+                            </div>
                         </div>
                     </header>
 
@@ -1373,7 +1391,7 @@
                                     <span className="font-semibold text-foreground">Code Depot</span>
                                 </div>
                                 <div className="text-muted-foreground text-sm">
-                                    © 2024 Code Depot. Built with ❤️ for developers.
+                                    © 2025 Code Depot. Built with ❤️ for developers.
                                 </div>
                             </div>
                         </div>
