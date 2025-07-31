@@ -514,18 +514,19 @@
             const [showPAT, setShowPAT] = useState(false);
 
             const handleSave = () => {
-                // Use default values if fields are empty
-                const finalGithubPAT = githubPAT.trim() || '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';
-                const finalGithubRepo = githubRepo.trim() || 'PLAYER-333/code-depot-dashboard';
+                if (!githubPAT.trim() || !githubRepo.trim()) {
+                    toast.error('Please fill in all fields');
+                    return;
+                }
 
                 // Validate repo format (username/repo-name)
-                if (!finalGithubRepo.includes('/') || finalGithubRepo.split('/').length !== 2) {
+                if (!githubRepo.includes('/') || githubRepo.split('/').length !== 2) {
                     toast.error('Repository format should be: username/repository-name');
                     return;
                 }
 
-                localStorage.setItem('github_pat', finalGithubPAT);
-                localStorage.setItem('github_repo', finalGithubRepo);
+                localStorage.setItem('github_pat', githubPAT);
+                localStorage.setItem('github_repo', githubRepo);
                 
                 // Update the state with the final values
                 setGithubPAT(finalGithubPAT);
@@ -586,7 +587,7 @@
                                             type={showPAT ? 'text' : 'password'}
                                             value={githubPAT}
                                             onChange={(e) => setGithubPAT(e.target.value)}
-                                            placeholder="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"
+                                            placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                                             className="pr-10"
                                         />
                                         <button
@@ -605,7 +606,7 @@
                                         id="github-repo"
                                         value={githubRepo}
                                         onChange={(e) => setGithubRepo(e.target.value)}
-                                        placeholder="PLAYER-333/code-depot-dashboard"
+                                        placeholder="yourusername/your-repo-name"
                                     />
                                 </div>
                             </div>
