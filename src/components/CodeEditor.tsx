@@ -65,9 +65,11 @@ export const CodeEditor = ({ accessKey }: CodeEditorProps) => {
     
     setLoading(true);
     try {
+      console.log('Loading files from:', `${githubRepo}/contents/code/${accessKey}`);
+      
       const response = await fetch(`https://api.github.com/repos/${githubRepo}/contents/code/${accessKey}`, {
         headers: {
-          'Authorization': `token ${githubPAT}`,
+          'Authorization': `Bearer ${githubPAT}`,
           'Accept': 'application/vnd.github.v3+json'
         }
       });
@@ -88,9 +90,22 @@ export const CodeEditor = ({ accessKey }: CodeEditorProps) => {
         
         const loadedFiles = await Promise.all(filePromises);
         setFiles(loadedFiles);
+        console.log('Loaded files:', loadedFiles.length);
+      } else if (response.status === 404) {
+        console.log('Directory does not exist yet, starting with empty file list');
+        setFiles([]);
+      } else {
+        const errorData = await response.json();
+        console.error('Error loading files:', response.status, errorData);
+        if (response.status === 401) {
+          toast.error('Authentication failed. Please check your GitHub token.');
+        } else if (response.status === 403) {
+          toast.error('Permission denied. Check repository access or token permissions.');
+        }
       }
     } catch (error) {
       console.error('Error loading files:', error);
+      setFiles([]);
     } finally {
       setLoading(false);
     }
@@ -110,29 +125,41 @@ export const CodeEditor = ({ accessKey }: CodeEditorProps) => {
       try {
         const existingResponse = await fetch(`https://api.github.com/repos/${githubRepo}/contents/code/${accessKey}/${file.name}`, {
           headers: {
-            'Authorization': `token ${githubPAT}`,
+            'Authorization': `Bearer ${githubPAT}`,
             'Accept': 'application/vnd.github.v3+json'
           }
         });
         if (existingResponse.ok) {
           const existingData = await existingResponse.json();
           sha = existingData.sha;
+        } else if (existingResponse.status !== 404) {
+          const errorData = await existingResponse.json();
+          console.error('GitHub API Error:', errorData);
+          throw new Error(`GitHub API Error: ${errorData.message || 'Unknown error'}`);
         }
       } catch (error) {
-        // File doesn't exist, that's ok
+        if (error instanceof Error && !error.message.includes('GitHub API Error')) {
+          console.log('File does not exist yet, will create new file');
+        } else {
+          throw error;
+        }
       }
 
       const content = btoa(unescape(encodeURIComponent(file.content)));
       const payload = {
-        message: `Save ${file.name}`,
+        message: `Save ${file.name} via Code Depot`,
         content,
         ...(sha && { sha })
       };
 
+      console.log('Attempting to save file:', file.name);
+      console.log('Repository:', githubRepo);
+      console.log('Path:', `code/${accessKey}/${file.name}`);
+
       const response = await fetch(`https://api.github.com/repos/${githubRepo}/contents/code/${accessKey}/${file.name}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `token ${githubPAT}`,
+          'Authorization': `Bearer ${githubPAT}`,
           'Content-Type': 'application/json',
           'Accept': 'application/vnd.github.v3+json'
         },
@@ -140,14 +167,33 @@ export const CodeEditor = ({ accessKey }: CodeEditorProps) => {
       });
 
       if (response.ok) {
+        const responseData = await response.json();
+        console.log('File saved successfully:', responseData);
         toast.success(`${file.name} saved successfully!`);
+        // Reload files to sync with GitHub
+        await loadFiles();
       } else {
-        const error = await response.json();
-        toast.error(`Failed to save: ${error.message}`);
+        const errorData = await response.json();
+        console.error('Save failed:', response.status, errorData);
+        
+        // Handle specific error cases
+        if (response.status === 401) {
+          toast.error('Authentication failed. Please check your GitHub token.');
+        } else if (response.status === 403) {
+          toast.error('Permission denied. Check repository access or token permissions.');
+        } else if (response.status === 404) {
+          toast.error('Repository not found. Please check the repository name.');
+        } else {
+          toast.error(`Failed to save: ${errorData.message || 'Unknown error'}`);
+        }
       }
     } catch (error) {
       console.error('Error saving file:', error);
-      toast.error('Failed to save file');
+      if (error instanceof Error) {
+        toast.error(`Failed to save file: ${error.message}`);
+      } else {
+        toast.error('Failed to save file: Unknown error');
+      }
     } finally {
       setLoading(false);
     }
@@ -161,7 +207,7 @@ export const CodeEditor = ({ accessKey }: CodeEditorProps) => {
       // Get file SHA
       const response = await fetch(`https://api.github.com/repos/${githubRepo}/contents/code/${accessKey}/${fileName}`, {
         headers: {
-          'Authorization': `token ${githubPAT}`,
+          'Authorization': `Bearer ${githubPAT}`,
           'Accept': 'application/vnd.github.v3+json'
         }
       });
@@ -172,7 +218,7 @@ export const CodeEditor = ({ accessKey }: CodeEditorProps) => {
         await fetch(`https://api.github.com/repos/${githubRepo}/contents/code/${accessKey}/${fileName}`, {
           method: 'DELETE',
           headers: {
-            'Authorization': `token ${githubPAT}`,
+            'Authorization': `Bearer ${githubPAT}`,
             'Content-Type': 'application/json',
             'Accept': 'application/vnd.github.v3+json'
           },
